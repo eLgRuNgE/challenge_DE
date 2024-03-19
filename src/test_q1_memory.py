@@ -1,10 +1,9 @@
-import unittest
 import datetime
+import memory_profiler
+import unittest
 from q1_memory import q1_memory
-from memory_profiler import profile
 
 class TestQ1Memory(unittest.TestCase):
-    @profile
     def test_q1_memory(self):
         """
         Prueba la función q1_memory para asegurar que devuelve los resultados esperados y mide correctamente el uso de memoria.
@@ -21,6 +20,12 @@ class TestQ1Memory(unittest.TestCase):
 
         # Archivo de datos de prueba
         test_file_path = '../data/farmers-protest-tweets-2021-2-4.json'
+
+        # Medir el uso de memoria de q3_memory con memory-profiler
+        mem_usage = memory_profiler.memory_usage((q1_memory, (test_file_path,)))
+
+        # Imprimir el uso de memoria
+        print(f"Uso de memoria de q1_memory: {max(mem_usage)} MB")
 
         # Ejecutar q1_memory y medir el uso de memoria
         result = q1_memory(test_file_path)
