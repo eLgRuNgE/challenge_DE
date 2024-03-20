@@ -1,47 +1,38 @@
 import json
-from collections import defaultdict
+from collections import Counter
 from datetime import datetime
+from emoji import emoji_list
 from typing import List, Tuple
 
-def q1_memory(file_path: str) -> List[Tuple[datetime.date, str]]:
+def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     """
-    Esta función analiza un archivo JSON que contiene registros de tweets y devuelve las 10 fechas
-    más comunes junto con el usuario más activo para cada fecha.
+    Esta función procesa un archivo JSON que contiene registros de tweets y devuelve los 10 emojis más utilizados,
+    junto con su respectivo conteo de ocurrencias.
 
     Args:
-        file_path (str): La ruta del archivo JSON que contiene los registros de tweets.
+        file_path (str): La ruta del archivo JSON que contiene los datos de los tweets.
 
     Returns:
-        List[Tuple[datetime.date, str]]: Una lista de tuplas, donde cada tupla contiene una fecha
-        y el usuario más activo para esa fecha.
+        List[Tuple[str, int]]: Una lista de tuplas que contiene los 10 emojis más utilizados,
+        cada una con su respectivo conteo de ocurrencias.
 
     Raises:
-        FileNotFoundError: Si no se encuentra el archivo especificado en file_path.
+        FileNotFoundError: Si el archivo especificado en file_path no se encuentra.
     """
 
-    # Paso 1: Lectura del archivo JSON
-    dates_dict = defaultdict(lambda: defaultdict(int))
+    # Inicialización del contador de emojis
+    emoji_counter = Counter()
 
-    # Paso 2: Procesamiento de los datos
+    # Lectura del archivo JSON y procesamiento de los tweets
     with open(file_path, 'r') as data:
-        for line_data in data:
-            tweet = json.loads(line_data)
-            tweet_date = tweet['date'].split('T')[0]
-            username = tweet['user']['username']
+        for line in data:
+            tweet_content = json.loads(line)['content']
 
-            # Actualización del contador de tweets por usuario y fecha
-            dates_dict[tweet_date][username] += 1
+            # Obtención de los emojis de cada línea
+            tweet_emojis = [emoji['emoji'] for emoji in emoji_list(tweet_content)]
 
-    # Paso 3: Determinación de las fechas más comunes
-    top_dates = sorted(dates_dict.keys(), key=lambda x: sum(dates_dict[x].values()), reverse=True)[:10]
+            # Actualización del contador de emojis
+            emoji_counter.update(tweet_emojis)
 
-    # Paso 4: Obtención del usuario más activo por fecha
-    top_users = [max(dates_dict[date], key=dates_dict[date].get) for date in top_dates]
-
-    # Paso 5: Formateo de las fechas
-    top_dates = [datetime.strptime(date_str, "%Y-%m-%d").date() for date_str in top_dates]
-
-    # Paso 6: Agrupación de las fechas y usuarios
-    result = list(zip(top_dates, top_users))
-
-    return result
+    # Devolución de los 10 emojis más utilizados
+    return emoji_counter.most_common(10)

@@ -31,8 +31,7 @@ def q1_time(file_path: str) -> List[Tuple[datetime.date, str]]:
             date_counts[tweet_date] += 1
         else:
             date_counts[tweet_date] = 1
-    most_common_dates = sorted(date_counts.items(), key=lambda x: x[1], 
-                                reverse=True)[:10]
+    most_common_dates = sorted(date_counts.items(), key=lambda x: x[1], reverse=True)[:10]
 
     # Paso 3: Obtención del usuario más activo para cada fecha más común
     most_common_users = []
