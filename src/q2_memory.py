@@ -20,19 +20,19 @@ def q2_memory(file_path: str) -> List[Tuple[str, int]]:
         FileNotFoundError: Si el archivo especificado en file_path no se encuentra.
     """
 
-    # Inicialización del contador de emojis
+    # Paso 1: Inicialización del contador de emojis
     emoji_counter = Counter()
 
-    # Lectura del archivo JSON y procesamiento de los tweets
+    # Paso 2: Lectura del archivo JSON y procesamiento de los tweets
     with open(file_path, 'r') as data:
         for line in data:
             tweet_content = json.loads(line)['content']
 
-            # Obtención de los emojis de cada línea
+            # Paso 3: Obtención de los emojis de cada línea
             tweet_emojis = [emoji['emoji'] for emoji in emoji_list(tweet_content)]
 
-            # Actualización del contador de emojis
+            # Paso 4: Actualización del contador de emojis
             emoji_counter.update(tweet_emojis)
 
-    # Devolución de los 10 emojis más utilizados
+    # Paso 5: Devolución de los 10 emojis más utilizados
     return emoji_counter.most_common(10)

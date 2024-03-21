@@ -4,29 +4,28 @@ from typing import List, Tuple
 
 def q3_memory(file_path: str) -> List[Tuple[str, int]]:
     """
-    Encuentra el top 10 histórico de usuarios más influyentes en función del conteo de las menciones (@) que registra cada uno de ellos.
+    Esta función procesa un archivo JSON que contiene registros de tweets y devuelve los 10 nombres de usuario
+    más mencionados en los tweets, junto con la frecuencia de menciones de cada uno.
 
     Args:
-    - file_path (str): Ruta al archivo JSON que contiene los datos de los tweets.
+        file_path (str): Ruta al archivo JSON que contiene los datos de los tweets.
 
     Returns:
-    - List[Tuple[str, int]]: Una lista de tuplas que contiene el top 10 de usuarios más influyentes, cada uno con su respectivo conteo de menciones.
+        List[Tuple[str, int]]: Una lista de tuplas que contiene los 10 nombres de usuario más mencionados,
+        junto con la frecuencia de menciones de cada uno.
+
+    Raises:
+        FileNotFoundError: Si el archivo especificado en file_path no se encuentra.
     """
-    # Inicializar un contador para almacenar el conteo de menciones de cada usuario
-    user_mentions = Counter()
+    # Paso 1: Se procesa el archivo línea por línea
+    user_counter = Counter()
 
-    # Leer el archivo JSON y procesar los tweets línea por línea
-    with open(file_path, 'r') as f:
-        for line in f:
-            tweet = json.loads(line)
-            # Obtener el nombre de usuario del tweet
-            username = tweet['user']['username']
-            # Contar las menciones (@) en el contenido del tweet
-            mentions_count = tweet['content'].count('@')
-            # Actualizar el contador de menciones para el usuario
-            user_mentions[username] += mentions_count
+    with open(file_path, 'r') as data:
+        for line in data:
+            tweet_data = json.loads(line)
+            mentioned_users = tweet_data.get('mentionedUsers')
+            if mentioned_users:
+                user_counter.update(user['username'] for user in mentioned_users)
 
-    # Obtener los top 10 usuarios más influyentes con su respectivo conteo de menciones
-    top_users = user_mentions.most_common(10)
-
-    return top_users
+    # Paso 2: Se retornan los 10 usernames más comunes
+    return user_counter.most_common(10)

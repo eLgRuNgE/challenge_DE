@@ -1,32 +1,24 @@
-import json
-from collections import Counter
-from typing import List, Tuple
-
 def q3_time(file_path: str) -> List[Tuple[str, int]]:
     """
-    Encuentra los 10 usuarios más influyentes en función del conteo de menciones (@) en los tweets presentes en el archivo JSON especificado.
+    Esta función procesa un archivo JSON que contiene registros de tweets y devuelve los 10 nombres de usuario
+    más mencionados en los tweets, junto con la frecuencia de menciones de cada uno.
 
     Args:
-    - file_path (str): Ruta al archivo JSON que contiene los datos de los tweets.
+        file_path (str): Ruta al archivo JSON que contiene los datos de los tweets.
 
     Returns:
-    - List[Tuple[str, int]]: Una lista de tuplas que contiene los 10 usuarios más influyentes, cada uno con su respectivo conteo de menciones.
+        List[Tuple[str, int]]: Una lista de tuplas que contiene los 10 nombres de usuario más mencionados,
+        junto con la frecuencia de menciones de cada uno.
+
+    Raises:
+        FileNotFoundError: Si el archivo especificado en file_path no se encuentra.
     """
-    # Inicializar un contador para contar el número de menciones de cada usuario
-    user_mentions = Counter()
+    # Paso 1: Se obtienen las listas de usuarios mencionados en cada tweet
+    with open(file_path, 'r') as data:
+        tweet_mentioned_users = [json.loads(line)['mentionedUsers'] for line in data.readlines()]
 
-    # Leer el archivo JSON y procesar los tweets línea por línea
-    with open(file_path, 'r') as f:
-        for line in f:
-            tweet = json.loads(line)
-            # Obtener el nombre de usuario (username) del tweet
-            username = tweet['user']['username']
-            # Contar el número de menciones (@) en el contenido del tweet
-            mentions_count = tweet['content'].count('@')
-            # Actualizar el contador de menciones del usuario
-            user_mentions[username] += mentions_count
+    # Paso 2: Se obtiene el username de cada user dentro de cada lista de mentionedUsers, exceptuando las listas vacías (caso None).
+    usernames = [user['username'] for obj in tweet_mentioned_users if obj is not None for user in obj]
 
-    # Obtener los 10 usuarios más influyentes con su respectivo conteo de menciones
-    top_10_users = user_mentions.most_common(10)
-
-    return top_10_users
+    # Paso 3: Se retornan los 10 usernames más comunes usando la clase Counter para contar y ordenar.
+    return Counter(usernames).most_common(10)
